@@ -549,7 +549,7 @@
       padding: 0 12px;
     }
 
-    .day-nav button {
+    .day-nav > button {
       background: var(--card);
       border: 1.5px solid var(--line);
       color: var(--rust-deep);
@@ -560,12 +560,16 @@
       font-size: 1.2em;
       line-height: 1;
       cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
     }
 
-    .day-nav button:hover {
+    .day-nav > button:hover {
       background: var(--paper-deep);
       border-color: var(--rust);
+      transform: scale(1.06);
     }
 
     .day-nav .fecha-wrap {
@@ -2098,53 +2102,88 @@
 
     /* --- Navegación Fecha & Botón 'Hoy' --- */
     .fecha-relative-row {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 3px;
+      margin-bottom: 6px;
+      min-height: 24px;
     }
 
     .fecha-relative {
-      font-size: 0.78em;
+      font-size: 0.74em;
       font-weight: 700;
-      color: var(--rust);
+      color: var(--ink-soft);
       text-transform: uppercase;
-      letter-spacing: 0.6px;
-      background: rgba(244, 63, 94, 0.08);
-      padding: 2px 8px;
-      border-radius: 10px;
+      letter-spacing: 0.5px;
+      background: var(--paper-deep);
+      border: 1px solid var(--line);
+      padding: 3px 10px;
+      border-radius: 20px;
+      line-height: 1.3;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+
+    .fecha-relative.es-hoy {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.35);
+      color: var(--sage-deep);
     }
 
     .btn-ir-hoy {
-      background: var(--rust);
-      color: white;
+      all: unset;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, var(--rust), #E11D48);
+      color: #ffffff !important;
       border: none;
-      border-radius: 12px;
-      font-size: 0.76em;
+      border-radius: 20px;
+      font-family: inherit;
+      font-size: 0.74em;
       font-weight: 700;
-      padding: 3px 10px;
+      letter-spacing: 0.2px;
+      padding: 3px 12px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      transition: background 0.15s, transform 0.1s;
-      box-shadow: 0 2px 6px rgba(244, 63, 94, 0.3);
-      animation: pulseSubtle 2s infinite ease-in-out;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+      width: auto !important;
+      height: auto !important;
+      line-height: 1.3;
+      box-shadow: 0 2px 8px rgba(244, 63, 94, 0.25);
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
     }
 
     .btn-ir-hoy:hover {
-      background: var(--rust-deep);
-      transform: scale(1.04);
+      background: linear-gradient(135deg, var(--rust-deep), #BE123C);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.35);
+      color: #ffffff !important;
     }
 
     .btn-ir-hoy:active {
-      transform: scale(0.95);
+      transform: scale(0.96);
     }
 
-    @keyframes pulseSubtle {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.03); }
+    body.dark-mode .fecha-relative {
+      background: #161E31;
+      border-color: #26334D;
+      color: #94A3B8;
+    }
+
+    body.dark-mode .fecha-relative.es-hoy {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34D399;
+    }
+
+    body.dark-mode .btn-ir-hoy {
+      background: linear-gradient(135deg, #F43F5E, #E11D48);
+      color: #ffffff !important;
+      box-shadow: 0 2px 10px rgba(244, 63, 94, 0.35);
     }
 
     /* --- Banner Resumen Diario --- */
@@ -2782,7 +2821,7 @@
           <div class="fecha-wrap">
             <div class="fecha-relative-row">
               <span class="fecha-relative" id="fecha-relative">Hoy</span>
-              <button id="btn-ir-hoy" class="btn-ir-hoy" style="display:none;" title="Volver al día de hoy">📅 Volver a Hoy</button>
+              <button type="button" id="btn-ir-hoy" class="btn-ir-hoy" style="display:none;" title="Volver al día de hoy"><span>📅</span><span>Volver a Hoy</span></button>
             </div>
             <div class="fecha" id="fecha-label"></div>
             <input type="date" id="fecha-picker">
@@ -3379,11 +3418,15 @@
       const btnHoy = document.getElementById("btn-ir-hoy");
 
       if (diffDias === 0) {
-        if (elRel) elRel.textContent = "Hoy";
+        if (elRel) {
+          elRel.textContent = "Hoy";
+          elRel.classList.add("es-hoy");
+        }
         if (btnHoy) btnHoy.style.display = "none";
       } else {
         if (btnHoy) btnHoy.style.display = "inline-flex";
         if (elRel) {
+          elRel.classList.remove("es-hoy");
           if (diffDias === -1) elRel.textContent = "Ayer";
           else if (diffDias === 1) elRel.textContent = "Mañana";
           else if (diffDias < -1) elRel.textContent = `Hace ${Math.abs(diffDias)} días`;
