@@ -26,6 +26,7 @@ Estética moderna y fluida con soporte para *Glassmorphism* (cartas flotantes, i
 - **Tipografía en el PDF:** DM Serif Display, incrustada de verdad en el PDF
   (no es una fuente estándar) para los títulos de cada día; el resto del
   texto usa Helvetica (fuente estándar, liviana).
+- **Paleta del PDF:** La misma paleta moderna de la web: `rose-700 #E11D48` para el acento principal y franja lateral, `amber-600 #D97706` para desayuno, `orange-600 #EA580C` para merienda, `violet-700 #7C3AED` para cena, `emerald-600 #059669` para comidas extra y actividad física, slate-900/500 para la tinta, slate-100/50 para los fondos. Los valores RGB se derivan directamente de las variables CSS (`--rust-deep`, `--mustard-deep`, `--apricot-deep`, `--plum-deep`, `--sage-deep`, `--ink`, `--ink-soft`, `--paper-deep`, `--line`, `--danger`) definidas en el `index.html`.
 - **Navegación de acciones:** un botón ☰ en el header abre un menú
   desplegable con las acciones principales (Galería de fotos, Comida extra, Generar
   PDF, Mi progreso, Métricas y Actividad). No hay barra de botones fija ni panel lateral siempre
@@ -200,10 +201,6 @@ estrellas (tocar la misma estrella otra vez borra el puntaje). Reglas:
     producción por algún motivo, el código cae automáticamente a una fuente
     estándar en vez de romper la generación del PDF.
 17. Sistema de puntuación (1-5 estrellas) por comida. El calendario de rachas fue extraído y puesto estáticamente en la pantalla inicial, mientras que el menú ☰ cuenta con su propio panel para reportes estadísticos avanzados (integración Chart.js).
-    día (verde/amarillo/rojo/gris) se usa también en el PDF: puntitos por
-    comida y un resumen de cumplimiento del rango en la última página. Ver
-    la sección "Sistema de puntuación" más arriba para el detalle de las
-    reglas.
 18. Autenticación, "Modo Lectura" público y contraseñas. Posibilita separar la app entre dueños de la cuenta con posibilidad para editar la información y el resto (familiares, amigos o la nutricionista) que pueden observar todos los datos al enviarles el link, pero les desaparecen las herramientas de edición.
 19. Panel invisible "admin" para gestionar usuarios, acceder a cuentas y ver listados.
 20. Mejoras técnicas y estéticas importantes al **Motor de PDF**:
@@ -219,6 +216,7 @@ estrellas (tocar la misma estrella otra vez borra el puntaje). Reglas:
 27. **Compartir Resumen del Día por WhatsApp:** Generador de texto estructurado con emojis y formato Markdown de WhatsApp (comidas, ingredientes, estrellas, actividades y biométricos) con botón de envío directo a WhatsApp o copia rápida al portapapeles con toast. (Nota: el tracker de agua fue retirado de la interfaz y del resumen para simplificar el flujo visual).
 28. **Modo Oscuro Integrado:** Alternador 🌙 / ☀️ en la cabecera, con paleta oscura slate contrastada (`#090D16`, `#161E31`) y sombras profundas, con persistencia automática en el navegador (`localStorage`) y respeto a las preferencias del sistema.
 29. **Galería Visual de Platos (Foto-feed 📸):** Modal con visualización en cuadrícula de fotos recientes, filtros por tipo de comida (Desayuno, Almuerzo, Merienda, Cena, Extras), visualización en lightbox y botón de salto instantáneo para viajar a la fecha de cualquier foto.
+30. **Sincronización de paleta del PDF con la web:** La paleta de colores del generador de PDF (`generate-pdf.mjs`) fue migrada de la estética editorial cálida original (terracota `#863213`, mostaza `#96690F`, papel crema `#EEE1C3`, oliva `#4A5733`) a la paleta moderna de la web: rose `#E11D48`, amber `#D97706`, orange `#EA580C`, violet `#7C3AED`, emerald `#059669`, y fondos/tinta en escala slate. Los valores RGB se derivan directamente de las variables CSS del `index.html`, garantizando que el documento generado tenga la misma identidad visual que la app.
 
 ## Limitaciones conocidas / decisiones tomadas
 

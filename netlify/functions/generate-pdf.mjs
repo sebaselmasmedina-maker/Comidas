@@ -27,27 +27,28 @@ const MESES = [
   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
 ];
 
-// Paleta cálida (misma identidad visual que la app web)
+// Paleta moderna (misma identidad visual que la app web rediseñada)
+// Los valores RGB se derivan directamente de las variables CSS del index.html.
 const COLORS = {
-  rustDeep: rgb(0.522, 0.196, 0.075),    // #863213
-  mustardDeep: rgb(0.588, 0.412, 0.059), // #96690F
-  apricotDeep: rgb(0.612, 0.298, 0.118), // #9C4C1E
-  plumDeep: rgb(0.341, 0.208, 0.251),    // #573540
-  sageDeep: rgb(0.290, 0.341, 0.200),    // #4A5733
-  ink: rgb(0.231, 0.173, 0.122),         // #3B2C1F
-  inkSoft: rgb(0.478, 0.404, 0.322),     // #7A6752
-  paperDeep: rgb(0.933, 0.882, 0.765),   // #EEE1C3
-  paperStripe: rgb(0.965, 0.933, 0.863), // franja más suave para filas alternadas
-  line: rgb(0.875, 0.800, 0.643),        // #DFCCA4
-  danger: rgb(0.608, 0.229, 0.173),      // #9B3A2C
-  white: rgb(1, 1, 1),
+  rustDeep:     rgb(0.882, 0.114, 0.282), // #E11D48  — rose-700    (--rust-deep)
+  mustardDeep:  rgb(0.851, 0.467, 0.024), // #D97706  — amber-600   (--mustard-deep)
+  apricotDeep:  rgb(0.918, 0.345, 0.047), // #EA580C  — orange-600  (--apricot-deep)
+  plumDeep:     rgb(0.486, 0.227, 0.929), // #7C3AED  — violet-700  (--plum-deep)
+  sageDeep:     rgb(0.020, 0.588, 0.412), // #059669  — emerald-600 (--sage-deep)
+  ink:          rgb(0.059, 0.090, 0.165), // #0F172A  — slate-900   (--ink)
+  inkSoft:      rgb(0.392, 0.455, 0.545), // #64748B  — slate-500   (--ink-soft)
+  paperDeep:    rgb(0.945, 0.961, 0.976), // #F1F5F9  — slate-100   (--paper-deep)
+  paperStripe:  rgb(0.973, 0.980, 0.988), // #F8FAFC  — slate-50    (franja alternada)
+  line:         rgb(0.886, 0.910, 0.941), // #E2E8F0  — slate-200   (--line)
+  danger:       rgb(0.937, 0.267, 0.267), // #EF4444  — red-500     (--danger)
+  white:        rgb(1, 1, 1),
 };
 
 const COLOR_POR_COMIDA = {
-  desayuno: COLORS.mustardDeep,
-  almuerzo: COLORS.rustDeep,
-  merienda: COLORS.apricotDeep,
-  cena: COLORS.plumDeep,
+  desayuno: COLORS.mustardDeep,  // amber
+  almuerzo: COLORS.rustDeep,     // rose
+  merienda: COLORS.apricotDeep,  // orange
+  cena:     COLORS.plumDeep,     // violet
 };
 
 // Mismo criterio que usa /api/progreso para "días verdes": si hay alguna
