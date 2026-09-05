@@ -2644,6 +2644,10 @@
                 <span class="qmi-icon" aria-hidden="true">🏃</span>
                 <span class="qmi-label">Actividad</span>
               </button>
+              <button id="btn-open-migrar" class="quick-menu-item">
+                <span class="qmi-icon" aria-hidden="true">📥</span>
+                <span class="qmi-label">Importar datos</span>
+              </button>
             </nav>
           </div>
         </div>
@@ -2652,6 +2656,38 @@
 
     <div class="layout">
       <aside class="sidebar" id="sidebar">
+        <!-- Modal: Migrar / importar datos de cuenta o página anterior -->
+        <div class="modal-overlay" id="modal-migrar">
+          <div class="modal-box" style="max-width: 520px;">
+            <button class="modal-close" data-close="modal-migrar">&times;</button>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+              <span style="font-size: 1.6rem;">📥</span>
+              <h3 style="margin: 0;">Importar datos de otra página</h3>
+            </div>
+            <p style="color: var(--ink-soft); font-size: 0.88rem; line-height: 1.45; margin-bottom: 16px;">
+              Copiá tus comidas, fotos, descripciones, actividades y opciones guardadas desde tu página anterior hacia esta cuenta fácilmente con un solo clic.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+              <div>
+                <label style="font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 4px;">URL de la página anterior</label>
+                <input id="migrar-url" type="url" value="https://comidasdiarias.netlify.app" placeholder="https://tu-pagina.netlify.app" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); font-size: 0.9rem; box-sizing: border-box;" />
+              </div>
+              <div>
+                <label style="font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 4px;">Usuario en la página anterior</label>
+                <input id="migrar-usuario" type="text" value="sebas" placeholder="sebas" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); font-size: 0.9rem; box-sizing: border-box;" />
+              </div>
+            </div>
+            <div id="migrar-log-container" style="display: none; background: #0F172A; color: #38BDF8; font-family: monospace; font-size: 0.78rem; padding: 12px; border-radius: 10px; max-height: 160px; overflow-y: auto; margin-bottom: 16px; line-height: 1.5; white-space: pre-wrap;"></div>
+            <div id="migrar-msg" style="font-size: 0.88rem; margin-bottom: 12px; font-weight: 500;"></div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+              <button class="btn-cancelar" data-close="modal-migrar" style="padding: 10px 18px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: white; font-weight: 600; cursor: pointer;">Cerrar</button>
+              <button id="btn-iniciar-migracion" class="btn-primary" style="padding: 10px 20px; border-radius: var(--radius-sm); background: linear-gradient(135deg, var(--sage), var(--sage-deep)); color: white; border: none; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                <span>Iniciar importación</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Modal: agregar comida extra -->
         <div class="modal-overlay" id="modal-extra">
           <div class="modal-box">
@@ -3822,26 +3858,83 @@
       lightboxImg.src = "";
     }
 
+    async function prepararFotoParaSubir(file) {
+      if (!file) return file;
+      return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          try {
+            const maxDim = 1600;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            canvas.toBlob(
+              (blob) => {
+                if (blob) {
+                  resolve(blob);
+                } else {
+                  resolve(file);
+                }
+              },
+              "image/jpeg",
+              0.82
+            );
+          } catch (e) {
+            resolve(file);
+          }
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          resolve(file);
+        };
+        img.src = url;
+      });
+    }
+
     async function subirFoto(key, file) {
       const label = document.getElementById(`label-${key}`);
       const msg = document.getElementById(`msg-${key}`);
       msg.textContent = "";
       label.classList.add("loading");
-      label.textContent = "Subiendo...";
-
-      const formData = new FormData();
-      formData.append("usuario", usuario);
-      formData.append("comida", key);
-      formData.append("fecha", toISO(currentDate));
-      formData.append("foto", file);
+      label.textContent = "Procesando...";
 
       try {
+        const fotoOptimizada = await prepararFotoParaSubir(file);
+        label.textContent = "Subiendo...";
+
+        const formData = new FormData();
+        formData.append("usuario", usuario);
+        formData.append("comida", key);
+        formData.append("fecha", toISO(currentDate));
+        formData.append("foto", fotoOptimizada, "foto.jpg");
+
         const res = await fetch("/api/upload", { method: "POST", body: formData });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Error al subir");
+        let data = null;
+        if (!res.ok) {
+          try {
+            data = await res.json();
+          } catch (_) {}
+          throw new Error((data && data.error) || `Error del servidor (${res.status}). Verificá que la foto sea válida.`);
+        }
+        data = await res.json().catch(() => ({}));
         renderDia();
       } catch (err) {
-        msg.textContent = err.message;
+        msg.textContent = err.message || "Error al subir la foto.";
       } finally {
         label.classList.remove("loading");
         label.textContent = "Subir / cambiar foto";
@@ -3953,6 +4046,281 @@
         if (msg) msg.textContent = "";
         abrirModal("modal-actividad");
         setTimeout(() => document.getElementById("activity-tipo")?.focus(), 60);
+      });
+    }
+
+    // ---------------- Importar datos desde página/cuenta anterior ----------------
+    const btnOpenMigrar = document.getElementById("btn-open-migrar");
+    if (btnOpenMigrar) {
+      btnOpenMigrar.addEventListener("click", () => {
+        const msg = document.getElementById("migrar-msg");
+        if (msg) {
+          msg.textContent = "";
+          msg.style.color = "";
+        }
+        const logContainer = document.getElementById("migrar-log-container");
+        if (logContainer) {
+          logContainer.style.display = "none";
+          logContainer.textContent = "";
+        }
+        abrirModal("modal-migrar");
+        toggleMenu(false);
+      });
+    }
+
+    const btnIniciarMigracion = document.getElementById("btn-iniciar-migracion");
+    if (btnIniciarMigracion) {
+      btnIniciarMigracion.addEventListener("click", async () => {
+        const urlInput = document.getElementById("migrar-url");
+        const userInput = document.getElementById("migrar-usuario");
+        const msg = document.getElementById("migrar-msg");
+        const logContainer = document.getElementById("migrar-log-container");
+
+        let origenUrl = (urlInput ? urlInput.value.trim() : "").replace(/\/+$/, "");
+        const origenUser = userInput ? userInput.value.trim() : "";
+
+        if (!origenUrl) {
+          msg.textContent = "Por favor ingresá la URL de la página anterior.";
+          msg.style.color = "var(--danger)";
+          return;
+        }
+        if (!origenUser) {
+          msg.textContent = "Por favor ingresá el usuario de la página anterior.";
+          msg.style.color = "var(--danger)";
+          return;
+        }
+
+        btnIniciarMigracion.disabled = true;
+        btnIniciarMigracion.textContent = "Importando...";
+        msg.textContent = "Conectando e importando datos...";
+        msg.style.color = "var(--ink-soft)";
+        logContainer.style.display = "block";
+        logContainer.textContent = "";
+
+        const log = (text) => {
+          logContainer.textContent += text + "\n";
+          logContainer.scrollTop = logContainer.scrollHeight;
+        };
+
+        try {
+          log(`🔍 Conectando con ${origenUrl} para usuario '${origenUser}'...`);
+
+          // 1. Presets de comidas
+          try {
+            log("📋 Importando opciones guardadas (presets)...");
+            const resPresets = await originalFetch(`${origenUrl}/api/presets?usuario=${encodeURIComponent(origenUser)}`);
+            if (resPresets.ok) {
+              const dataPresets = await resPresets.json();
+              if (dataPresets.presets) {
+                for (const comida of ["desayuno", "almuerzo", "merienda", "cena"]) {
+                  const arr = dataPresets.presets[comida] || [];
+                  for (const preset of arr) {
+                    await fetch("/api/presets-add", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ usuario, comida, preset }),
+                    }).catch(() => {});
+                  }
+                }
+                log("  ✅ Opciones de comidas copiadas.");
+              }
+            }
+          } catch (e) {
+            log(`  ⚠️ Opciones de comida: ${e.message}`);
+          }
+
+          // 2. Presets de actividades
+          try {
+            log("🏃 Importando presets de actividad física...");
+            const resActP = await originalFetch(`${origenUrl}/api/activity-presets?usuario=${encodeURIComponent(origenUser)}`);
+            if (resActP.ok) {
+              const dataActP = await resActP.json();
+              const arr = dataActP.opciones || [];
+              for (const preset of arr) {
+                await fetch("/api/activity-presets-add", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ usuario, preset }),
+                }).catch(() => {});
+              }
+              log("  ✅ Presets de actividad copiados.");
+            }
+          } catch (e) {
+            log(`  ⚠️ Presets de actividad: ${e.message}`);
+          }
+
+          // 3. Descubrir días con datos
+          log("📅 Buscando días con registros...");
+          const diasSet = new Set();
+          const mesesAConsultar = [];
+          const hoyObj = new Date();
+          for (let m = 0; m < 3; m++) {
+            const d = new Date(hoyObj.getFullYear(), hoyObj.getMonth() - m, 1);
+            const mesStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+            mesesAConsultar.push(mesStr);
+          }
+
+          for (const mes of mesesAConsultar) {
+            try {
+              const resProg = await originalFetch(`${origenUrl}/api/progreso?usuario=${encodeURIComponent(origenUser)}&mes=${mes}&hoy=${toISO(hoyObj)}`);
+              if (resProg.ok) {
+                const dataProg = await resProg.json();
+                if (Array.isArray(dataProg.dias)) {
+                  dataProg.dias.forEach((d) => {
+                    if (d.completo || d.hayFoto || d.hayDesc || d.hayScore || d.hayAct) {
+                      diasSet.add(d.fecha);
+                    }
+                  });
+                }
+              }
+            } catch (_) {}
+          }
+
+          if (diasSet.size === 0) {
+            ["2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04"].forEach((f) => diasSet.add(f));
+          }
+
+          const dias = Array.from(diasSet).sort();
+          log(`  Encontrados ${dias.length} días con registros.`);
+
+          // 4. Migrar día por día
+          let totalFotos = 0;
+          let totalDesc = 0;
+          let totalAct = 0;
+          let totalExtras = 0;
+
+          for (const fecha of dias) {
+            log(`\n⏳ Procesando día: ${fecha}`);
+
+            // Descripciones
+            try {
+              const resDesc = await originalFetch(`${origenUrl}/api/descriptions?usuario=${encodeURIComponent(origenUser)}&fecha=${fecha}`);
+              if (resDesc.ok) {
+                const dataDesc = await resDesc.json();
+                if (dataDesc.descripciones) {
+                  for (const [c, txt] of Object.entries(dataDesc.descripciones)) {
+                    if (txt) {
+                      await fetch("/api/set-description", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ usuario, fecha, comida: c, descripcion: txt }),
+                      }).catch(() => {});
+                      totalDesc++;
+                    }
+                  }
+                }
+              }
+            } catch (_) {}
+
+            // Puntajes
+            try {
+              const resSc = await originalFetch(`${origenUrl}/api/scores?usuario=${encodeURIComponent(origenUser)}&fecha=${fecha}`);
+              if (resSc.ok) {
+                const dataSc = await resSc.json();
+                if (dataSc.puntajes) {
+                  for (const [c, val] of Object.entries(dataSc.puntajes)) {
+                    if (val && c !== "extras") {
+                      await fetch("/api/set-score", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ usuario, fecha, comida: c, puntaje: val }),
+                      }).catch(() => {});
+                    }
+                  }
+                }
+              }
+            } catch (_) {}
+
+            // Actividades
+            try {
+              const resAct = await originalFetch(`${origenUrl}/api/activities?usuario=${encodeURIComponent(origenUser)}&fecha=${fecha}`);
+              if (resAct.ok) {
+                const dataAct = await resAct.json();
+                if (Array.isArray(dataAct.actividades)) {
+                  for (const a of dataAct.actividades) {
+                    await fetch("/api/activity-add", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ usuario, fecha, tipo: a.tipo, duracion: a.duracion, notas: a.notas }),
+                    }).catch(() => {});
+                    totalAct++;
+                  }
+                }
+              }
+            } catch (_) {}
+
+            // Fotos principales (desayuno, almuerzo, merienda, cena)
+            for (const comida of ["desayuno", "almuerzo", "merienda", "cena"]) {
+              try {
+                const imgRes = await originalFetch(`${origenUrl}/api/image?usuario=${encodeURIComponent(origenUser)}&comida=${comida}&fecha=${fecha}`);
+                if (imgRes.ok && (imgRes.headers.get("content-type") || "").includes("image")) {
+                  const blob = await imgRes.blob();
+                  const fotoOpt = await prepararFotoParaSubir(blob);
+                  const fd = new FormData();
+                  fd.append("usuario", usuario);
+                  fd.append("comida", comida);
+                  fd.append("fecha", fecha);
+                  fd.append("foto", fotoOpt, "foto.jpg");
+                  const upRes = await fetch("/api/upload", { method: "POST", body: fd });
+                  if (upRes.ok) {
+                    log(`  📸 Foto ${comida} guardada.`);
+                    totalFotos++;
+                  }
+                }
+              } catch (_) {}
+            }
+
+            // Comidas Extras
+            try {
+              const resExt = await originalFetch(`${origenUrl}/api/extras?usuario=${encodeURIComponent(origenUser)}&fecha=${fecha}`);
+              if (resExt.ok) {
+                const dataExt = await resExt.json();
+                if (Array.isArray(dataExt.extras)) {
+                  for (const ex of dataExt.extras) {
+                    try {
+                      const exImgRes = await originalFetch(`${origenUrl}/api/extra-image?usuario=${encodeURIComponent(origenUser)}&id=${ex.id}&fecha=${fecha}`);
+                      if (exImgRes.ok && (exImgRes.headers.get("content-type") || "").includes("image")) {
+                        const blob = await exImgRes.blob();
+                        const fotoOpt = await prepararFotoParaSubir(blob);
+                        const fd = new FormData();
+                        fd.append("usuario", usuario);
+                        fd.append("fecha", fecha);
+                        fd.append("after", ex.after || "desayuno");
+                        fd.append("label", ex.label || "");
+                        fd.append("desc", ex.desc || "");
+                        fd.append("foto", fotoOpt, "foto.jpg");
+                        const upRes = await fetch("/api/extra-upload", { method: "POST", body: fd });
+                        if (upRes.ok) {
+                          log(`  🧁 Extra '${ex.label || 'extra'}' guardada.`);
+                          totalExtras++;
+                        }
+                      }
+                    } catch (_) {}
+                  }
+                }
+              }
+            } catch (_) {}
+          }
+
+          log("\n🎉 ¡Importación completada con éxito!");
+          log(`Resumen: ${totalFotos} fotos, ${totalDesc} descripciones, ${totalAct} actividades, ${totalExtras} extras.`);
+
+          msg.textContent = "✅ ¡Datos importados correctamente!";
+          msg.style.color = "var(--sage-deep)";
+
+          // Actualizar vistas actuales
+          await Promise.all([cargarPresets(), cargarPresetsActividad()]);
+          renderDia();
+          cargarProgreso();
+          showToast("✨ Datos importados con éxito");
+        } catch (err) {
+          log(`\n❌ Error durante la importación: ${err.message}`);
+          msg.textContent = `Error: ${err.message}`;
+          msg.style.color = "var(--danger)";
+        } finally {
+          btnIniciarMigracion.disabled = false;
+          btnIniciarMigracion.textContent = "Iniciar importación";
+        }
       });
     }
 
@@ -4330,20 +4698,30 @@
       }
 
       btnExtraGuardar.disabled = true;
-      btnExtraGuardar.textContent = "Agregando...";
-
-      const formData = new FormData();
-      formData.append("usuario", usuario);
-      formData.append("fecha", toISO(currentDate));
-      formData.append("after", extraAfter.value);
-      formData.append("label", extraLabelInput.value.trim());
-      formData.append("desc", extraDescInput.value.trim());
-      formData.append("foto", file);
+      btnExtraGuardar.textContent = "Procesando...";
 
       try {
+        const fotoOptimizada = await prepararFotoParaSubir(file);
+        btnExtraGuardar.textContent = "Subiendo...";
+
+        const formData = new FormData();
+        formData.append("usuario", usuario);
+        formData.append("fecha", toISO(currentDate));
+        formData.append("after", extraAfter.value);
+        formData.append("label", extraLabelInput.value.trim());
+        formData.append("desc", extraDescInput.value.trim());
+        formData.append("foto", fotoOptimizada, "foto.jpg");
+
         const res = await fetch("/api/extra-upload", { method: "POST", body: formData });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "No se pudo agregar");
+        let data = null;
+        if (!res.ok) {
+          try {
+            data = await res.json();
+          } catch (_) {}
+          throw new Error((data && data.error) || `Error del servidor (${res.status}). Verificá que la foto sea válida.`);
+        }
+        data = await res.json().catch(() => ({}));
+
         extraLabelInput.value = "";
         extraDescInput.value = "";
         extraFileInput.value = "";
@@ -4351,7 +4729,7 @@
         cerrarModal("modal-extra");
         renderDia();
       } catch (err) {
-        extraMsg.textContent = err.message;
+        extraMsg.textContent = err.message || "Error al agregar comida extra.";
       } finally {
         btnExtraGuardar.disabled = false;
         btnExtraGuardar.textContent = "Agregar";
