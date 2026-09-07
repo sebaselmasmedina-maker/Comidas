@@ -44,6 +44,15 @@ async function getPuntajesDia(store, usuario, fechaStr) {
   return {};
 }
 
+async function getActividadesDia(store, usuario, fechaStr) {
+  try {
+    const raw = await store.get(`${usuario}:${fechaStr}:actividades`, { type: "json" });
+    if (Array.isArray(raw)) return raw;
+  } catch (e) {
+  }
+  return [];
+}
+
 export default async (req) => {
   const url = new URL(req.url);
   const usuario = url.searchParams.get("usuario");
@@ -77,14 +86,43 @@ export default async (req) => {
   // gris (sin puntuar) no la corta, solo la corta un día amarillo o rojo. ----
   let racha = 0;
   let alcanzoLimite = false;
+
+  let rachaEntrenamiento = 0;
+
+  let siguoComidas = true;
+  let siguoEntrenamientos = true;
+
   let cursor = hoy;
   for (let i = 0; i < MAX_DIAS_RACHA; i++) {
+    if (!siguoComidas && !siguoEntrenamientos) break;
+
     const fechaStr = formatFecha(cursor);
-    const puntajes = await getPuntajesDia(store, usuario, fechaStr);
-    const estado = estadoDelDia(puntajes);
-    if (estado === "rojo" || estado === "amarillo") break;
-    if (estado === "verde") racha++;
-    // "gris": no suma ni corta, seguimos para atrás
+
+    // Cálculo Racha Comidas
+    if (siguoComidas) {
+      const puntajes = await getPuntajesDia(store, usuario, fechaStr);
+      const estado = estadoDelDia(puntajes);
+      if (estado === "rojo" || estado === "amarillo") {
+        siguoComidas = false;
+      } else if (estado === "verde") {
+        racha++;
+      }
+    }
+
+    // Cálculo Racha Entrenamiento
+    if (siguoEntrenamientos) {
+      const actividades = await getActividadesDia(store, usuario, fechaStr);
+      if (actividades && actividades.length > 0) {
+        rachaEntrenamiento++;
+      } else {
+        // En entrenamiento, si no hay registro (gris), corta la racha,
+        // excepto si es 'hoy' (i === 0), porque capaz todavía no entrenó hoy.
+        if (i > 0) {
+          siguoEntrenamientos = false;
+        }
+      }
+    }
+
     cursor = addDias(cursor, -1);
     if (i === MAX_DIAS_RACHA - 1) alcanzoLimite = true;
   }
@@ -97,14 +135,28 @@ export default async (req) => {
   const cantidadDias = ultimoDia.getUTCDate();
 
   const dias = [];
+  const resumenActividades = [];
+  let totalEntrenamientosMes = 0;
+
   for (let d = 1; d <= cantidadDias; d++) {
     const fechaDia = new Date(Date.UTC(anio, mesNum - 1, d));
     const fechaStr = formatFecha(fechaDia);
     const puntajes = await getPuntajesDia(store, usuario, fechaStr);
-    dias.push({ fecha: fechaStr, estado: estadoDelDia(puntajes) });
+    const actividades = await getActividadesDia(store, usuario, fechaStr);
+
+    let entreno = false;
+    if (actividades && actividades.length > 0) {
+      entreno = true;
+      totalEntrenamientosMes++;
+      for (const act of actividades) {
+        resumenActividades.push({ fecha: fechaStr, tipo: act.tipo, nota: act.nota });
+      }
+    }
+
+    dias.push({ fecha: fechaStr, estado: estadoDelDia(puntajes), entreno });
   }
 
-  return new Response(JSON.stringify({ racha, alcanzoLimite, mes: mesStr, dias }), {
+  return new Response(JSON.stringify({ racha, rachaEntrenamiento, alcanzoLimite, mes: mesStr, dias, totalEntrenamientosMes, resumenActividades }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

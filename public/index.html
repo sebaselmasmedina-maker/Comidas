@@ -549,7 +549,7 @@
       padding: 0 12px;
     }
 
-    .day-nav > button {
+    .day-nav>button {
       background: var(--card);
       border: 1.5px solid var(--line);
       color: var(--rust-deep);
@@ -566,7 +566,7 @@
       transition: background 0.15s, border-color 0.15s, transform 0.1s;
     }
 
-    .day-nav > button:hover {
+    .day-nav>button:hover {
       background: var(--paper-deep);
       border-color: var(--rust);
       transform: scale(1.06);
@@ -1770,9 +1770,17 @@
       transition: width 0.3s ease;
     }
 
-    .meal-stat-bar-verde { background: #2E7559; }
-    .meal-stat-bar-amarillo { background: #F59E0B; }
-    .meal-stat-bar-rojo { background: #EF4444; }
+    .meal-stat-bar-verde {
+      background: #2E7559;
+    }
+
+    .meal-stat-bar-amarillo {
+      background: #F59E0B;
+    }
+
+    .meal-stat-bar-rojo {
+      background: #EF4444;
+    }
 
     .meal-stat-details {
       display: flex;
@@ -1844,6 +1852,7 @@
       text-align: center;
       padding: 24px 12px;
     }
+
     .racha-box {
       text-align: center;
       padding: 14px 0 20px;
@@ -1999,7 +2008,8 @@
        ========================================================================== */
 
     /* --- Tokens de Modo Oscuro --- */
-    :root[data-theme="dark"], body.dark-mode {
+    :root[data-theme="dark"],
+    body.dark-mode {
       --paper: #090D16;
       --paper-deep: #0F172A;
       --card: rgba(22, 30, 49, 0.78);
@@ -2507,6 +2517,217 @@
       transform: translateX(-50%) translateY(0);
       opacity: 1;
     }
+
+    /* --- FAB Cámara Rápida --- */
+    .fab-camera {
+      position: fixed;
+      bottom: 28px;
+      right: 20px;
+      z-index: 950;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--rust), #E11D48);
+      color: white;
+      font-size: 1.65em;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(244, 63, 94, 0.45), 0 2px 8px rgba(0, 0, 0, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
+      animation: fab-pulse 2.5s ease-in-out infinite;
+    }
+
+    .fab-camera:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 36px rgba(244, 63, 94, 0.55), 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .fab-camera:active {
+      transform: scale(0.93);
+    }
+
+    @keyframes fab-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 8px 28px rgba(244, 63, 94, 0.45), 0 2px 8px rgba(0, 0, 0, 0.12);
+      }
+
+      50% {
+        box-shadow: 0 8px 36px rgba(244, 63, 94, 0.6), 0 2px 12px rgba(0, 0, 0, 0.18);
+      }
+    }
+
+    .fab-camera .fab-input {
+      display: none;
+    }
+
+    body.read-only-mode .fab-camera {
+      display: none !important;
+    }
+
+    /* --- Modal Cámara: elegir comida --- */
+    .camera-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .camera-modal-overlay.open {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .camera-modal-box {
+      background: var(--card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      padding: 28px 24px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .camera-modal-box h3 {
+      margin: 0 0 6px;
+      font-size: 1.25em;
+      color: var(--ink);
+    }
+
+    .camera-modal-box .camera-modal-sub {
+      color: var(--ink-soft);
+      font-size: 0.88em;
+      margin: 0 0 18px;
+      line-height: 1.4;
+    }
+
+    .camera-meal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .camera-meal-btn {
+      border: 2px solid var(--line);
+      background: var(--paper);
+      border-radius: 16px;
+      padding: 16px 10px;
+      cursor: pointer;
+      font-family: var(--font-display);
+      font-size: 1em;
+      font-weight: 700;
+      color: var(--ink);
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .camera-meal-btn:hover {
+      border-color: var(--rust);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .camera-meal-btn.sugerida {
+      border-color: var(--rust);
+      background: rgba(244, 63, 94, 0.08);
+      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15);
+    }
+
+    .camera-meal-btn .meal-icon {
+      font-size: 1.5em;
+      line-height: 1;
+    }
+
+    .camera-meal-btn .meal-tag {
+      font-size: 0.7em;
+      font-weight: 600;
+      color: var(--sage-deep);
+      background: rgba(16, 185, 129, 0.12);
+      border-radius: 8px;
+      padding: 2px 7px;
+      margin-top: 2px;
+    }
+
+    .camera-modal-cancel {
+      background: transparent;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 10px 20px;
+      color: var(--ink-soft);
+      font-family: inherit;
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .camera-modal-cancel:hover {
+      color: var(--ink);
+      border-color: var(--ink-soft);
+    }
+
+    .camera-modal-uploading {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      color: var(--ink-soft);
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    .camera-modal-uploading.active {
+      display: flex;
+    }
+
+    .camera-spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid var(--line);
+      border-top-color: var(--rust);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    body.dark-mode .camera-modal-box {
+      background: var(--paper-deep);
+      border-color: var(--line);
+    }
+
+    body.dark-mode .camera-meal-btn {
+      background: var(--paper);
+      border-color: var(--line);
+    }
+
+    body.dark-mode .camera-meal-btn.sugerida {
+      border-color: var(--rust);
+      background: rgba(244, 63, 94, 0.12);
+    }
   </style>
 </head>
 
@@ -2521,8 +2742,10 @@
 
       <!-- Selector de pestañas: Iniciar Sesión / Registrarme -->
       <div class="auth-tabs" role="tablist">
-        <button type="button" class="auth-tab-btn active" id="tab-login" role="tab" aria-selected="true">Iniciar Sesión</button>
-        <button type="button" class="auth-tab-btn" id="tab-register" role="tab" aria-selected="false">Registrarme</button>
+        <button type="button" class="auth-tab-btn active" id="tab-login" role="tab" aria-selected="true">Iniciar
+          Sesión</button>
+        <button type="button" class="auth-tab-btn" id="tab-register" role="tab"
+          aria-selected="false">Registrarme</button>
       </div>
 
       <!-- Formulario: Iniciar Sesión -->
@@ -2533,7 +2756,8 @@
         </div>
         <div class="auth-field">
           <label for="input-password">Contraseña</label>
-          <input type="password" id="input-password" placeholder="Tu contraseña" maxlength="50" autocomplete="current-password">
+          <input type="password" id="input-password" placeholder="Tu contraseña" maxlength="50"
+            autocomplete="current-password">
         </div>
         <button type="button" id="btn-entrar" class="btn-auth-primary">Iniciar Sesión</button>
         <button type="button" id="btn-invitado" class="btn-auth-guest">👀 Entrar en modo lectura (solo ver)</button>
@@ -2546,17 +2770,21 @@
       <div class="auth-form" id="auth-form-register" style="display:none;">
         <div class="auth-field">
           <label for="reg-usuario">Elegí un nombre de usuario</label>
-          <input type="text" id="reg-usuario" placeholder="ej: sofia_fit (3 a 30 caracteres)" maxlength="30" autocomplete="username">
+          <input type="text" id="reg-usuario" placeholder="ej: sofia_fit (3 a 30 caracteres)" maxlength="30"
+            autocomplete="username">
         </div>
         <div class="auth-field">
           <label for="reg-password">Creá tu contraseña</label>
-          <input type="password" id="reg-password" placeholder="Mínimo 4 caracteres" maxlength="50" autocomplete="new-password">
+          <input type="password" id="reg-password" placeholder="Mínimo 4 caracteres" maxlength="50"
+            autocomplete="new-password">
         </div>
         <div class="auth-field">
           <label for="reg-password-confirm">Confirmá tu contraseña</label>
-          <input type="password" id="reg-password-confirm" placeholder="Repetí tu contraseña" maxlength="50" autocomplete="new-password">
+          <input type="password" id="reg-password-confirm" placeholder="Repetí tu contraseña" maxlength="50"
+            autocomplete="new-password">
         </div>
-        <button type="button" id="btn-crear-cuenta" class="btn-auth-primary btn-auth-register">✨ Registrar mi Cuenta</button>
+        <button type="button" id="btn-crear-cuenta" class="btn-auth-primary btn-auth-register">✨ Registrar mi
+          Cuenta</button>
         <div class="auth-switch-prompt">
           ¿Ya tenés una cuenta? <button type="button" id="link-ir-a-login">Iniciar sesión acá</button>
         </div>
@@ -2599,13 +2827,16 @@
               <span class="user-chip-icon" aria-hidden="true">👤</span>
               <b class="user-chip-name" id="user-label"></b>
             </div>
-            <button id="btn-theme-toggle" class="header-pill-btn btn-theme" title="Alternar tema (Claro / Oscuro)" aria-label="Cambiar tema">
+            <button id="btn-theme-toggle" class="header-pill-btn btn-theme" title="Alternar tema (Claro / Oscuro)"
+              aria-label="Cambiar tema">
               <span id="theme-icon">🌙</span>
             </button>
-            <button id="btn-login" class="header-pill-btn btn-login-warn" style="display:none;" title="Ingresar contraseña para editar">
+            <button id="btn-login" class="header-pill-btn btn-login-warn" style="display:none;"
+              title="Ingresar contraseña para editar">
               🔑 Editar
             </button>
-            <button id="btn-change-password" class="header-pill-btn btn-change-pw" style="display:none;" title="Cambiar contraseña">
+            <button id="btn-change-password" class="header-pill-btn btn-change-pw" style="display:none;"
+              title="Cambiar contraseña">
               🔑 Contraseña
             </button>
             <button id="btn-compartir" class="header-pill-btn" title="Copiar enlace para compartir">
@@ -2665,23 +2896,35 @@
               <h3 style="margin: 0;">Importar datos de otra página</h3>
             </div>
             <p style="color: var(--ink-soft); font-size: 0.88rem; line-height: 1.45; margin-bottom: 16px;">
-              Copiá tus comidas, fotos, descripciones, actividades y opciones guardadas desde tu página anterior hacia esta cuenta fácilmente con un solo clic.
+              Copiá tus comidas, fotos, descripciones, actividades y opciones guardadas desde tu página anterior hacia
+              esta cuenta fácilmente con un solo clic.
             </p>
             <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
               <div>
-                <label style="font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 4px;">URL de la página anterior</label>
-                <input id="migrar-url" type="url" value="https://comidasdiarias.netlify.app" placeholder="https://tu-pagina.netlify.app" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); font-size: 0.9rem; box-sizing: border-box;" />
+                <label
+                  style="font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 4px;">URL
+                  de la página anterior</label>
+                <input id="migrar-url" type="url" value="https://comidasdiarias.netlify.app"
+                  placeholder="https://tu-pagina.netlify.app"
+                  style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); font-size: 0.9rem; box-sizing: border-box;" />
               </div>
               <div>
-                <label style="font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 4px;">Usuario en la página anterior</label>
-                <input id="migrar-usuario" type="text" value="sebas" placeholder="sebas" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); font-size: 0.9rem; box-sizing: border-box;" />
+                <label
+                  style="font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 4px;">Usuario
+                  en la página anterior</label>
+                <input id="migrar-usuario" type="text" value="sebas" placeholder="sebas"
+                  style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); font-size: 0.9rem; box-sizing: border-box;" />
               </div>
             </div>
-            <div id="migrar-log-container" style="display: none; background: #0F172A; color: #38BDF8; font-family: monospace; font-size: 0.78rem; padding: 12px; border-radius: 10px; max-height: 160px; overflow-y: auto; margin-bottom: 16px; line-height: 1.5; white-space: pre-wrap;"></div>
+            <div id="migrar-log-container"
+              style="display: none; background: #0F172A; color: #38BDF8; font-family: monospace; font-size: 0.78rem; padding: 12px; border-radius: 10px; max-height: 160px; overflow-y: auto; margin-bottom: 16px; line-height: 1.5; white-space: pre-wrap;">
+            </div>
             <div id="migrar-msg" style="font-size: 0.88rem; margin-bottom: 12px; font-weight: 500;"></div>
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
-              <button class="btn-cancelar" data-close="modal-migrar" style="padding: 10px 18px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: white; font-weight: 600; cursor: pointer;">Cerrar</button>
-              <button id="btn-iniciar-migracion" class="btn-primary" style="padding: 10px 20px; border-radius: var(--radius-sm); background: linear-gradient(135deg, var(--sage), var(--sage-deep)); color: white; border: none; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+              <button class="btn-cancelar" data-close="modal-migrar"
+                style="padding: 10px 18px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: white; font-weight: 600; cursor: pointer;">Cerrar</button>
+              <button id="btn-iniciar-migracion" class="btn-primary"
+                style="padding: 10px 20px; border-radius: var(--radius-sm); background: linear-gradient(135deg, var(--sage), var(--sage-deep)); color: white; border: none; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
                 <span>Iniciar importación</span>
               </button>
             </div>
@@ -2750,13 +2993,14 @@
         <div class="modal-overlay" id="modal-progreso">
           <div class="modal-box modal-box-progreso">
             <button class="modal-close" data-close="modal-progreso">&times;</button>
-            
+
             <div class="stats-modal-header">
               <h3>🏆 Mi Progreso</h3>
               <p>Resumen y hábitos de los últimos 30 días</p>
             </div>
 
-            <div id="stats-loading" style="display:none; color:var(--ink-soft); font-size:14px; text-align:center; padding: 28px 0;">
+            <div id="stats-loading"
+              style="display:none; color:var(--ink-soft); font-size:14px; text-align:center; padding: 28px 0;">
               ⏳ Cargando métricas...
             </div>
 
@@ -2857,7 +3101,8 @@
           <div class="fecha-wrap">
             <div class="fecha-relative-row">
               <span class="fecha-relative" id="fecha-relative">Hoy</span>
-              <button type="button" id="btn-ir-hoy" class="btn-ir-hoy" style="display:none;" title="Volver al día de hoy"><span>📅</span><span>Volver a Hoy</span></button>
+              <button type="button" id="btn-ir-hoy" class="btn-ir-hoy" style="display:none;"
+                title="Volver al día de hoy"><span>📅</span><span>Volver a Hoy</span></button>
             </div>
             <div class="fecha" id="fecha-label"></div>
             <input type="date" id="fecha-picker">
@@ -2905,7 +3150,8 @@
         </div>
 
         <div class="grid" id="grid"></div>
-        <div class="bottom-grid" id="bottom-grid">
+        <div class="bottom-grid" id="bottom-grid"
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
           <!-- Inline Progress Calendar Card -->
           <div class="card card-progreso" style="padding: 16px;">
             <h3
@@ -2929,19 +3175,32 @@
             </div>
           </div>
 
-          <!-- Card: Actividad física del día -->
-          <div class="card card-actividad" id="card-actividad">
-            <div class="activity-card-header">
-              <div class="activity-header-title">
-                <h2>🏃 Actividad física de hoy</h2>
-                <span class="activity-counter-pill" id="activity-counter-pill" style="display:none;">0</span>
-              </div>
-              <button id="btn-open-activity-modal" class="btn-activity-add-trigger" title="Agregar actividad" aria-label="Agregar actividad">
-                <span class="btn-icon">＋</span>
-                <span class="btn-text">Agregar</span>
-              </button>
+          <!-- Calendar: Entrenamiento -->
+          <div class="card card-entrenamiento" style="padding: 16px; position: relative;">
+            <button id="btn-open-activity-modal-small" title="Agregar actividad" aria-label="Agregar actividad"
+              style="position: absolute; top: 12px; left: 16px; width: 34px; height: 34px; border-radius: 50%; background: var(--sage-deep); color: white; border: none; font-size: 1.6em; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(46, 117, 89, 0.3); transition: transform 0.15s, background 0.15s;">
+              +
+            </button>
+            <h3
+              style="margin: 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); color: var(--ink); text-align: center; font-size: 1.25em;">
+              🏃 Entrenamiento</h3>
+            <div class="racha-box">
+              <span class="racha-numero" id="entrenamiento-racha-numero" style="color:var(--sage-deep);">–</span>
+              <span class="racha-texto" id="entrenamiento-racha-texto">días seguidos entrenando</span>
             </div>
-            <div class="activity-list" id="activity-list"></div>
+            <div class="calendario-nav">
+              <button id="btn-mes-act-prev" aria-label="Mes anterior">‹</button>
+              <span class="calendario-mes" id="calendario-act-mes-label"></span>
+              <button id="btn-mes-act-next" aria-label="Mes siguiente">›</button>
+            </div>
+            <div class="calendario-grid" id="calendario-act-grid"></div>
+            <div class="calendario-leyenda" style="justify-content: center;">
+              <span><i class="dot dot-verde" style="border-radius:4px;"></i> Entrenó</span>
+              <span><i class="dot dot-gris" style="border-radius:4px; opacity:0.4;"></i> Sin actividad</span>
+            </div>
+            <div id="entrenamiento-resumen-lista"
+              style="margin-top:20px; text-align:left; font-size:0.9em; color:var(--ink-soft); display:flex; flex-direction:column; gap:8px;">
+            </div>
           </div>
 
           <!-- Modal: Actividad física -->
@@ -2953,11 +3212,13 @@
               <div class="activity-modal-fields">
                 <label>
                   <span>Tipo de actividad</span>
-                  <input type="text" id="activity-tipo" placeholder="ej: Gym, Correr, Pádel, Caminata..." maxlength="40" autocomplete="off">
+                  <input type="text" id="activity-tipo" placeholder="ej: Gym, Correr, Pádel, Caminata..." maxlength="40"
+                    autocomplete="off">
                 </label>
                 <label>
                   <span>Detalle / Nota opcional</span>
-                  <input type="text" id="activity-nota" placeholder="ej: 5km, 1 hs, suave..." maxlength="300" autocomplete="off">
+                  <input type="text" id="activity-nota" placeholder="ej: 5km, 1 hs, suave..." maxlength="300"
+                    autocomplete="off">
                 </label>
                 <label>
                   <span>Opciones guardadas</span>
@@ -2968,7 +3229,8 @@
               </div>
               <div class="activity-modal-actions">
                 <button id="btn-activity-add" class="btn-activity-submit">➕ Agregar actividad</button>
-                <button id="btn-activity-star" class="btn-activity-favorite" title="Guardar como opción rápida" aria-label="Guardar en opciones rápidas">⭐</button>
+                <button id="btn-activity-star" class="btn-activity-favorite" title="Guardar como opción rápida"
+                  aria-label="Guardar en opciones rápidas">⭐</button>
               </div>
               <div class="msg" id="activity-msg"></div>
             </div>
@@ -3026,9 +3288,47 @@
     <img id="lightbox-img" src="" alt="Foto ampliada">
   </div>
 
+  <!-- FAB Cámara Rápida -->
+  <button class="fab-camera" id="fab-camera" title="📸 Foto rápida" style="display:none;">
+    📸
+    <input type="file" accept="image/jpeg,image/png" class="fab-input" id="fab-camera-input">
+  </button>
+
+  <!-- Modal: ¿A qué comida va esta foto? -->
+  <div class="camera-modal-overlay" id="camera-modal">
+    <div class="camera-modal-box">
+      <h3>📸 ¿A qué comida va?</h3>
+      <p class="camera-modal-sub">Elegí la comida para esta foto. La sugerida tiene borde rojo.</p>
+      <div class="camera-meal-grid" id="camera-meal-grid">
+        <button class="camera-meal-btn" data-comida="desayuno">
+          <span class="meal-icon">🥐</span> Desayuno
+        </button>
+        <button class="camera-meal-btn" data-comida="almuerzo">
+          <span class="meal-icon">🍽️</span> Almuerzo
+        </button>
+        <button class="camera-meal-btn" data-comida="merienda">
+          <span class="meal-icon">🧁</span> Merienda
+        </button>
+        <button class="camera-meal-btn" data-comida="cena">
+          <span class="meal-icon">🌙</span> Cena
+        </button>
+      </div>
+      <div class="camera-modal-uploading" id="camera-uploading">
+        <div class="camera-spinner"></div>
+        <span id="camera-uploading-text">Subiendo foto...</span>
+      </div>
+      <button class="camera-modal-cancel" id="camera-modal-cancel">Cancelar</button>
+    </div>
+  </div>
+
   <div class="toast-pill" id="toast-pill"></div>
 
   <script>
+    // Registrar Service Worker para PWA shortcuts
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => { });
+    }
+
     const COMIDAS = {
       desayuno: "Desayuno",
       almuerzo: "Almuerzo",
@@ -3292,7 +3592,7 @@
     if (btnInvitado) {
       btnInvitado.addEventListener("click", () => {
         const valor = document.getElementById("input-usuario").value.trim() ||
-                      (document.getElementById("reg-usuario") ? document.getElementById("reg-usuario").value.trim() : "");
+          (document.getElementById("reg-usuario") ? document.getElementById("reg-usuario").value.trim() : "");
         const msgEl = document.getElementById("login-msg");
         if (msgEl) msgEl.classList.remove("success");
 
@@ -3528,6 +3828,14 @@
     }
 
     async function renderDia() {
+      if (!usuario) return;
+      document.title = `${currentDate.getDate()}/${currentDate.getMonth() + 1} - Comidas`;
+      if (document.getElementById("pantalla-usuario").style.display === "flex") {
+        document.getElementById("pantalla-usuario").style.display = "none";
+      }
+      document.getElementById("app").style.display = "block";
+      document.getElementById("user-label").textContent = usuario;
+
       const fechaStr = toISO(currentDate);
       const qs = `usuario=${encodeURIComponent(usuario)}&fecha=${fechaStr}`;
 
@@ -3586,6 +3894,7 @@
       buildGrid();
       renderActividades();
       actualizarResumenDiario();
+      cargarProgreso();
     }
 
     function crearCardBase(key, nombre) {
@@ -3928,7 +4237,7 @@
         if (!res.ok) {
           try {
             data = await res.json();
-          } catch (_) {}
+          } catch (_) { }
           throw new Error((data && data.error) || `Error del servidor (${res.status}). Verificá que la foto sea válida.`);
         }
         data = await res.json().catch(() => ({}));
@@ -4039,15 +4348,6 @@
         setTimeout(() => document.getElementById("activity-tipo")?.focus(), 60);
       });
     }
-    const btnOpenActModal = document.getElementById("btn-open-activity-modal");
-    if (btnOpenActModal) {
-      btnOpenActModal.addEventListener("click", () => {
-        const msg = document.getElementById("activity-msg");
-        if (msg) msg.textContent = "";
-        abrirModal("modal-actividad");
-        setTimeout(() => document.getElementById("activity-tipo")?.focus(), 60);
-      });
-    }
 
     // ---------------- Importar datos desde página/cuenta anterior ----------------
     const btnOpenMigrar = document.getElementById("btn-open-migrar");
@@ -4119,7 +4419,7 @@
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ usuario, comida, preset }),
-                    }).catch(() => {});
+                    }).catch(() => { });
                   }
                 }
                 log("  ✅ Opciones de comidas copiadas.");
@@ -4141,7 +4441,7 @@
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ usuario, preset }),
-                }).catch(() => {});
+                }).catch(() => { });
               }
               log("  ✅ Presets de actividad copiados.");
             }
@@ -4173,7 +4473,7 @@
                   });
                 }
               }
-            } catch (_) {}
+            } catch (_) { }
           }
 
           if (diasSet.size === 0) {
@@ -4204,13 +4504,13 @@
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ usuario, fecha, comida: c, descripcion: txt }),
-                      }).catch(() => {});
+                      }).catch(() => { });
                       totalDesc++;
                     }
                   }
                 }
               }
-            } catch (_) {}
+            } catch (_) { }
 
             // Puntajes
             try {
@@ -4224,12 +4524,12 @@
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ usuario, fecha, comida: c, puntaje: val }),
-                      }).catch(() => {});
+                      }).catch(() => { });
                     }
                   }
                 }
               }
-            } catch (_) {}
+            } catch (_) { }
 
             // Actividades
             try {
@@ -4242,12 +4542,12 @@
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ usuario, fecha, tipo: a.tipo, duracion: a.duracion, notas: a.notas }),
-                    }).catch(() => {});
+                    }).catch(() => { });
                     totalAct++;
                   }
                 }
               }
-            } catch (_) {}
+            } catch (_) { }
 
             // Fotos principales (desayuno, almuerzo, merienda, cena)
             for (const comida of ["desayuno", "almuerzo", "merienda", "cena"]) {
@@ -4267,7 +4567,7 @@
                     totalFotos++;
                   }
                 }
-              } catch (_) {}
+              } catch (_) { }
             }
 
             // Comidas Extras
@@ -4295,11 +4595,11 @@
                           totalExtras++;
                         }
                       }
-                    } catch (_) {}
+                    } catch (_) { }
                   }
                 }
               }
-            } catch (_) {}
+            } catch (_) { }
           }
 
           log("\n🎉 ¡Importación completada con éxito!");
@@ -4615,18 +4915,79 @@
       if (!mesProgreso) mesProgreso = mesActualDeHoy();
       const mesStr = `${mesProgreso.anio}-${String(mesProgreso.mes).padStart(2, "0")}`;
       const hoyStr = toISO(new Date());
-      document.getElementById("calendario-mes-label").textContent = `${MESES_LARGO[mesProgreso.mes - 1]} ${mesProgreso.anio} `;
+      const labelText = `${MESES_LARGO[mesProgreso.mes - 1]} ${mesProgreso.anio} `;
+      document.getElementById("calendario-mes-label").textContent = labelText;
+      const actLabel = document.getElementById("calendario-act-mes-label");
+      if (actLabel) actLabel.textContent = labelText;
+
       document.getElementById("calendario-grid").innerHTML = "";
+      const actGrid = document.getElementById("calendario-act-grid");
+      if (actGrid) actGrid.innerHTML = "";
+
       try {
         const res = await fetch(`/api/progreso?usuario=${encodeURIComponent(usuario)}&mes=${mesStr}&hoy=${hoyStr}`);
         const data = await res.json();
         document.getElementById("racha-numero").textContent = data.alcanzoLimite ? `${data.racha} +` : data.racha;
         document.getElementById("racha-texto").textContent =
           data.racha === 1 ? "día seguido cumpliendo" : "días seguidos cumpliendo";
+
         renderCalendario(data.dias || [], mesProgreso);
+        renderCalendarioActividad(data.dias || [], mesProgreso);
+
+        const entRachaNum = document.getElementById("entrenamiento-racha-numero");
+        if (entRachaNum) entRachaNum.textContent = data.rachaEntrenamiento !== undefined ? data.rachaEntrenamiento : "–";
+        const entRachaTxt = document.getElementById("entrenamiento-racha-texto");
+        if (entRachaTxt) entRachaTxt.textContent = data.rachaEntrenamiento === 1 ? "día seguido entrenando" : "días seguidos entrenando";
+
+        const resumenBox = document.getElementById("entrenamiento-resumen-lista");
+        if (resumenBox) {
+          if (data.resumenActividades && data.resumenActividades.length > 0) {
+            resumenBox.innerHTML = "<strong style='color:var(--ink);'>Resumen mensual:</strong>" +
+              data.resumenActividades.map(act => {
+                const numDia = Number(act.fecha.slice(-2));
+                let txt = `<b>Dia ${numDia}</b>: ${act.tipo}`;
+                if (act.nota) txt += ` <span style='opacity:0.8'>(${act.nota})</span>`;
+                return `<div>🏃 ${txt}</div>`;
+              }).join('');
+          } else {
+            resumenBox.innerHTML = "No registraste actividades este mes.";
+          }
+          if (data.resumenActividades && data.resumenActividades.length > 0) {
+            resumenBox.innerHTML += `<div style="margin-top:6px; font-weight:700; color:var(--ink);">Total del mes: ${data.totalEntrenamientosMes} entrenamientos</div>`;
+          }
+        }
       } catch (e) {
         document.getElementById("racha-numero").textContent = "–";
       }
+    }
+
+    function renderCalendarioActividad(dias, { anio, mes }) {
+      const grid = document.getElementById("calendario-act-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      const primerDiaSemana = new Date(anio, mes - 1, 1).getDay();
+      for (let i = 0; i < primerDiaSemana; i++) {
+        const vacio = document.createElement("div");
+        vacio.className = "calendario-dia vacio";
+        grid.appendChild(vacio);
+      }
+      dias.forEach((dia) => {
+        const num = Number(dia.fecha.slice(-2));
+        const celda = document.createElement("div");
+
+        let estClass = "estado-gris";
+        if (dia.entreno) estClass = "estado-verde";
+
+        // Use inline styles to make it look distinct (square-ish, semi-transparent if no data)
+        celda.className = `calendario-dia ${estClass}`;
+        celda.style.borderRadius = "8px";
+        if (!dia.entreno) celda.style.opacity = "0.6";
+
+        celda.textContent = num;
+        celda.title = dia.fecha;
+        grid.appendChild(celda);
+      });
     }
 
     function renderCalendario(dias, { anio, mes }) {
@@ -4661,6 +5022,11 @@
       if (mesProgreso.mes > 12) { mesProgreso.mes = 1; mesProgreso.anio += 1; }
       cargarProgreso();
     });
+
+    const btnActPrev = document.getElementById("btn-mes-act-prev");
+    if (btnActPrev) btnActPrev.addEventListener("click", () => document.getElementById("btn-mes-prev").click());
+    const btnActNext = document.getElementById("btn-mes-act-next");
+    if (btnActNext) btnActNext.addEventListener("click", () => document.getElementById("btn-mes-next").click());
 
     // ---------------- Agregar comida extra ----------------
     const extraAfter = document.getElementById("extra-after");
@@ -4717,7 +5083,7 @@
         if (!res.ok) {
           try {
             data = await res.json();
-          } catch (_) {}
+          } catch (_) { }
           throw new Error((data && data.error) || `Error del servidor (${res.status}). Verificá que la foto sea válida.`);
         }
         data = await res.json().catch(() => ({}));
@@ -4843,7 +5209,7 @@
         tipoInput.value = "";
         notaInput.value = "";
         cerrarModal("modal-actividad");
-        renderActividades();
+        renderDia();
       } catch (err) {
         msg.textContent = err.message;
       } finally {
@@ -4893,6 +5259,26 @@
         alert(err.message);
       }
     });
+
+    // ==========================================================================
+    // INICIALIZACIÓN
+    // ==========================================================================
+
+    // Configurar nuevo botón de actividad para abrir modal
+    const smallBtnAct = document.getElementById("btn-open-activity-modal-small");
+    if (smallBtnAct) {
+      smallBtnAct.addEventListener("click", () => {
+        const msg = document.getElementById("activity-msg");
+        if (msg) msg.textContent = "";
+        abrirModal("modal-actividad");
+        setTimeout(() => document.getElementById("activity-tipo")?.focus(), 60);
+      });
+      // small scale animation already in inline styles but adding hover
+      smallBtnAct.onmouseover = () => smallBtnAct.style.transform = 'scale(1.1)';
+      smallBtnAct.onmouseout = () => smallBtnAct.style.transform = 'scale(1)';
+    }
+
+    const initialThemeStatus = document.documentElement.getAttribute("data-theme") === "dark";
 
     // ---------------- Generar PDF ----------------
     const pdfDesde = document.getElementById("pdf-desde");
@@ -5275,6 +5661,218 @@
         setTimeout(() => { btn.disabled = false; btn.textContent = "💾 Guardar métricas"; }, 2000);
       }
     });
+
+    // ==========================================================================
+    // FAB CÁMARA RÁPIDA — Widget de foto directa a la siguiente comida
+    // ==========================================================================
+
+    const HORARIOS_COMIDA = [
+      { key: 'desayuno', desde: 5, hasta: 10 },
+      { key: 'almuerzo', desde: 11, hasta: 14 },
+      { key: 'merienda', desde: 15, hasta: 18 },
+      { key: 'cena', desde: 19, hasta: 28 }, // 28 = 4am del siguiente (19-23 + 0-4)
+    ];
+    const ORDEN_COMIDAS = ['desayuno', 'almuerzo', 'merienda', 'cena'];
+    const ICONOS_COMIDA = { desayuno: '🥐', almuerzo: '🍽️', merienda: '🧁', cena: '🌙' };
+
+    /**
+     * Detecta la próxima comida a cargar:
+     * 1. Mira la hora actual para sugerir la comida de esa franja
+     * 2. Si esa ya tiene foto, salta a la siguiente sin foto
+     * 3. Si todas tienen foto, devuelve la de la franja horaria igual
+     */
+    function getProximaComida() {
+      const ahora = new Date();
+      let hora = ahora.getHours();
+
+      // Determinar comida por franja horaria
+      let sugerida = 'desayuno'; // default
+      if (hora >= 5 && hora <= 10) sugerida = 'desayuno';
+      else if (hora >= 11 && hora <= 14) sugerida = 'almuerzo';
+      else if (hora >= 15 && hora <= 18) sugerida = 'merienda';
+      else sugerida = 'cena'; // 19-4
+
+      // Verificar cuáles ya tienen foto
+      const sinFoto = ORDEN_COMIDAS.filter(k => {
+        const wrap = document.getElementById(`wrap-${k}`);
+        return wrap && !wrap.querySelector('img');
+      });
+
+      if (sinFoto.length === 0) return sugerida; // todas tienen foto, va la horaria
+
+      // Si la sugerida no tiene foto, la dejamos
+      if (sinFoto.includes(sugerida)) return sugerida;
+
+      // Buscar la siguiente sin foto desde la sugerida en adelante
+      const idx = ORDEN_COMIDAS.indexOf(sugerida);
+      for (let i = 1; i < 4; i++) {
+        const next = ORDEN_COMIDAS[(idx + i) % 4];
+        if (sinFoto.includes(next)) return next;
+      }
+
+      return sugerida;
+    }
+
+    // --- FAB: click abre la cámara ---
+    let fabPendingFile = null;
+
+    const fabBtn = document.getElementById('fab-camera');
+    const fabInput = document.getElementById('fab-camera-input');
+    const cameraModal = document.getElementById('camera-modal');
+    const cameraMealGrid = document.getElementById('camera-meal-grid');
+    const cameraUploading = document.getElementById('camera-uploading');
+    const cameraUploadingText = document.getElementById('camera-uploading-text');
+    const cameraCancel = document.getElementById('camera-modal-cancel');
+
+    // Mostrar FAB cuando el usuario está autenticado y la app visible
+    function actualizarFAB() {
+      if (fabBtn) {
+        const appVisible = document.getElementById('app').style.display !== 'none';
+        fabBtn.style.display = (appVisible && !readOnly) ? 'flex' : 'none';
+      }
+    }
+
+    // Observer para detectar cuando la app se muestra (después de login)
+    const appEl = document.getElementById('app');
+    if (appEl && fabBtn) {
+      const obs = new MutationObserver(() => actualizarFAB());
+      obs.observe(appEl, { attributes: true, attributeFilter: ['style'] });
+    }
+
+    if (fabBtn && fabInput) {
+      fabBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        fabInput.value = '';
+        fabInput.click();
+      });
+
+      fabInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        fabPendingFile = file;
+        mostrarCameraModal();
+      });
+    }
+
+    function mostrarCameraModal() {
+      const sugerida = getProximaComida();
+      const btns = cameraMealGrid.querySelectorAll('.camera-meal-btn');
+
+      btns.forEach(btn => {
+        const k = btn.dataset.comida;
+        btn.classList.toggle('sugerida', k === sugerida);
+
+        // Mostrar tag "Siguiente" en la sugerida
+        let tag = btn.querySelector('.meal-tag');
+        if (k === sugerida) {
+          if (!tag) {
+            tag = document.createElement('span');
+            tag.className = 'meal-tag';
+            btn.appendChild(tag);
+          }
+          tag.textContent = 'Siguiente';
+        } else if (tag) {
+          tag.remove();
+        }
+      });
+
+      // Reset estado
+      cameraUploading.classList.remove('active');
+      cameraMealGrid.style.display = 'grid';
+      cameraCancel.style.display = 'block';
+      cameraModal.classList.add('open');
+    }
+
+    function cerrarCameraModal() {
+      cameraModal.classList.remove('open');
+      fabPendingFile = null;
+    }
+
+    // Click en un botón de comida → subir foto
+    if (cameraMealGrid) {
+      cameraMealGrid.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.camera-meal-btn');
+        if (!btn || !fabPendingFile) return;
+
+        const comida = btn.dataset.comida;
+        const file = fabPendingFile;
+        fabPendingFile = null;
+
+        // Mostrar estado de subida
+        cameraMealGrid.style.display = 'none';
+        cameraCancel.style.display = 'none';
+        cameraUploadingText.textContent = `Subiendo a ${COMIDAS[comida]}...`;
+        cameraUploading.classList.add('active');
+
+        try {
+          // Asegurar que estamos en el día de hoy
+          const hoy = new Date();
+          hoy.setHours(0, 0, 0, 0);
+          currentDate = hoy;
+          renderFechaLabel();
+
+          const fotoOptimizada = await prepararFotoParaSubir(file);
+
+          const formData = new FormData();
+          formData.append('usuario', usuario);
+          formData.append('comida', comida);
+          formData.append('fecha', toISO(currentDate));
+          formData.append('foto', fotoOptimizada, 'foto.jpg');
+
+          const res = await fetch('/api/upload', { method: 'POST', body: formData });
+          if (!res.ok) {
+            let data = null;
+            try { data = await res.json(); } catch (_) { }
+            throw new Error((data && data.error) || `Error (${res.status})`);
+          }
+
+          cerrarCameraModal();
+          renderDia();
+          showToast(`📸 Foto subida a ${COMIDAS[comida]}`);
+        } catch (err) {
+          cerrarCameraModal();
+          showToast(`❌ ${err.message || 'Error al subir la foto'}`, 4000);
+        }
+      });
+    }
+
+    // Cancelar
+    if (cameraCancel) {
+      cameraCancel.addEventListener('click', cerrarCameraModal);
+    }
+    if (cameraModal) {
+      cameraModal.addEventListener('click', (e) => {
+        if (e.target === cameraModal) cerrarCameraModal();
+      });
+    }
+
+    // --- Shortcut PWA: ?action=camera ---
+    (function checkCameraAction() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('action') === 'camera') {
+        // Limpiar el param para que no se repita al recargar
+        params.delete('action');
+        const newUrl = params.toString()
+          ? `${window.location.pathname}?${params.toString()}`
+          : window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+
+        // Esperar a que el login se resuelva y luego disparar la cámara
+        const waitForApp = setInterval(() => {
+          const appVisible = document.getElementById('app').style.display !== 'none';
+          if (appVisible && usuario && !readOnly) {
+            clearInterval(waitForApp);
+            setTimeout(() => {
+              fabInput.value = '';
+              fabInput.click();
+            }, 400);
+          }
+        }, 200);
+
+        // Timeout de seguridad (10s)
+        setTimeout(() => clearInterval(waitForApp), 10000);
+      }
+    })();
 
   </script>
 </body>
