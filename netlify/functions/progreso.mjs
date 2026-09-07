@@ -149,7 +149,7 @@ export default async (req) => {
     if (actividades && actividades.length > 0) {
       entreno = true;
       cantActividades = actividades.length;
-      totalEntrenamientosMes++;
+      totalEntrenamientosMes += cantActividades;
       for (const act of actividades) {
         resumenActividades.push({ fecha: fechaStr, tipo: act.tipo, nota: act.nota });
       }
