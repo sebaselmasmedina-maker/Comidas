@@ -4942,18 +4942,9 @@
         const resumenBox = document.getElementById("entrenamiento-resumen-lista");
         if (resumenBox) {
           if (data.resumenActividades && data.resumenActividades.length > 0) {
-            resumenBox.innerHTML = "<strong style='color:var(--ink);'>Resumen mensual:</strong>" +
-              data.resumenActividades.map(act => {
-                const numDia = Number(act.fecha.slice(-2));
-                let txt = `<b>Dia ${numDia}</b>: ${act.tipo}`;
-                if (act.nota) txt += ` <span style='opacity:0.8'>(${act.nota})</span>`;
-                return `<div>🏃 ${txt}</div>`;
-              }).join('');
+            resumenBox.innerHTML = `<div style="text-align:center; font-weight:700; color:var(--sage-deep); font-size:1.05em; background:var(--paper-deep); padding:12px; border-radius:12px; border:1px solid var(--line);">🏆 Total del mes: ${data.totalEntrenamientosMes} entrenamientos</div>`;
           } else {
-            resumenBox.innerHTML = "No registraste actividades este mes.";
-          }
-          if (data.resumenActividades && data.resumenActividades.length > 0) {
-            resumenBox.innerHTML += `<div style="margin-top:6px; font-weight:700; color:var(--ink);">Total del mes: ${data.totalEntrenamientosMes} entrenamientos</div>`;
+            resumenBox.innerHTML = "";
           }
         }
       } catch (e) {
@@ -4979,12 +4970,26 @@
         let estClass = "estado-gris";
         if (dia.entreno) estClass = "estado-verde";
 
-        // Use inline styles to make it look distinct (square-ish, semi-transparent if no data)
         celda.className = `calendario-dia ${estClass}`;
         celda.style.borderRadius = "8px";
+        celda.style.position = "relative";
         if (!dia.entreno) celda.style.opacity = "0.6";
 
         celda.textContent = num;
+
+        if (dia.entreno && dia.cantActividades > 0) {
+          const badge = document.createElement("span");
+          badge.textContent = dia.cantActividades;
+          badge.style.position = "absolute";
+          badge.style.bottom = "2px";
+          badge.style.right = "4px";
+          badge.style.fontSize = "0.75em";
+          badge.style.opacity = "0.9";
+          badge.style.fontWeight = "bold";
+          badge.style.color = "rgba(255,255,255,0.95)";
+          celda.appendChild(badge);
+        }
+
         celda.title = dia.fecha;
         grid.appendChild(celda);
       });

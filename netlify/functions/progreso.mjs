@@ -145,15 +145,17 @@ export default async (req) => {
     const actividades = await getActividadesDia(store, usuario, fechaStr);
 
     let entreno = false;
+    let cantActividades = 0;
     if (actividades && actividades.length > 0) {
       entreno = true;
+      cantActividades = actividades.length;
       totalEntrenamientosMes++;
       for (const act of actividades) {
         resumenActividades.push({ fecha: fechaStr, tipo: act.tipo, nota: act.nota });
       }
     }
 
-    dias.push({ fecha: fechaStr, estado: estadoDelDia(puntajes), entreno });
+    dias.push({ fecha: fechaStr, estado: estadoDelDia(puntajes), entreno, cantActividades });
   }
 
   return new Response(JSON.stringify({ racha, rachaEntrenamiento, alcanzoLimite, mes: mesStr, dias, totalEntrenamientosMes, resumenActividades }), {
